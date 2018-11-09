@@ -21,16 +21,17 @@
 #include "checkArgs.h"
 #include <iostream>    // For cerr and cout
 #include <cstdlib>     // For atoi()
-
+#include <fstream>
+using namespace std;
 const uint32_t RCVBUFSIZE = 32;    // Size of receive buffer
 
 int main(int argc, char *argv[]) {
 
 	checkArgs* argumentos = new checkArgs(argc, argv);
-	
+	ofstream fs("archivo.txt");
     std::string servAddress; 
 	uint16_t    echoServPort;
-    std::string echoString;   
+    std::string echoString = "GET / HTTP/1.1\r\nHost: " + servAddress;   
 	
 	servAddress   = argumentos->getArgs().SERVER;
 	echoServPort  = argumentos->getArgs().PORT;
@@ -58,6 +59,8 @@ int main(int argc, char *argv[]) {
 			if ((bytesReceived = (sock.recv(echoBuffer, RCVBUFSIZE))) <= 0) {
 				std::cerr << "Unable to read";
 				exit(EXIT_FAILURE);
+				fs << echoBuffer << endl;
+				fs.close();
 			}
 			totalBytesReceived += bytesReceived;     // Keep tally of total bytes
 			echoBuffer[bytesReceived] = '\0';        // Terminate the string!
